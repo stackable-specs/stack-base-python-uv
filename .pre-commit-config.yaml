@@ -2,12 +2,13 @@
 # https://pre-commit.com/
 
 repos:
-  # Dockerfile linting with Hadolint
+  # Dockerfile linting with Hadolint (Docker version)
+  # Note: hadolint-docker doesn't mount local config files.
+  # Use inline ignores in Dockerfile: # hadolint ignore=DL3006
   - repo: https://github.com/hadolint/hadolint
     rev: v2.12.0
     hooks:
-      - id: hadolint
-        args: ['--config', '.hadolint.yaml']
+      - id: hadolint-docker
 
   # Docker Compose validation (local hook)
   - repo: local
