@@ -7,7 +7,7 @@ Format and lifecycle rules: [`docs/specs/practices/madr.md`](../specs/practices/
 
 | ADR | Title | Status |
 | --- | ----- | ------ |
-| _none yet_ | | |
+| [ADR-001](001-adopt-docker-docker-compose.md) | Adopt Docker and Docker Compose for Containerization | Accepted |
 
 ## Authoring
 
