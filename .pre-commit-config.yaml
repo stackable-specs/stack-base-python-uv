@@ -1,0 +1,30 @@
+# Pre-commit configuration for stack-base-python-uv
+# https://pre-commit.com/
+
+repos:
+  # Dockerfile linting with Hadolint
+  - repo: https://github.com/hadolint/hadolint
+    rev: v2.12.0
+    hooks:
+      - id: hadolint
+        args: ['--config', '.hadolint.yaml']
+
+  # Docker Compose validation (local hook)
+  - repo: local
+    hooks:
+      - id: compose-validate
+        name: Validate Docker Compose
+        entry: bash -c 'docker compose config --quiet'
+        language: system
+        files: ^compose.*\.ya?ml$
+        pass_filenames: false
+
+  # Trivy misconfiguration scanning (local hook)
+  - repo: local
+    hooks:
+      - id: trivy-config
+        name: Trivy IaC Scan
+        entry: bash -c 'trivy config Dockerfile compose.yaml compose.override.yaml 2>/dev/null || true'
+        language: system
+        files: ^(Dockerfile|compose.*\.ya?ml)$
+        pass_filenames: false

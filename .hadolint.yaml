@@ -1,0 +1,22 @@
+# Hadolint configuration
+# https://github.com/hadolint/hadolint
+
+# We pin images by digest, so the tag is for readability only
+ignored:
+  - DL3006  # Always tag FROM images (we use digest pinning)
+
+# Treat these as errors
+override:
+  error:
+    - DL3001  # Pin versions in apt-get
+    - DL3002  # Last USER should not be root
+    - DL3015  # Avoid --no-install-recommends
+    - DL3020  # Use COPY instead of ADD
+    - DL3025  # Use arguments in CMD/ENTRYPOINT
+
+# Only allow images from trusted registries
+trustedRegistries:
+  - ghcr.io
+  - docker.io
+  - python
+  - docker.io/python

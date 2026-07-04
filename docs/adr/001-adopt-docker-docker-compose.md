@@ -123,6 +123,80 @@ gh pin .github/workflows/ci.yml
 - SLSA Level 3 provenance for supply chain security
 - Active maintenance and good documentation
 
+### Linting Strategy
+
+We will use the following tools for Docker and Docker Compose linting:
+
+#### Hadolint (Dockerfile Linting)
+
+- **What:** Haskell Dockerfile linter with ShellCheck integration for RUN commands
+- **Stars:** 12.3k
+- **Install:** `brew install hadolint` or `docker run --rm -i hadolint/hadolint < Dockerfile`
+- **Key checks:**
+  - DL3001: Pin versions in apt-get
+  - DL3002: Last USER should not be root
+  - DL3006: Always tag FROM images (we ignore this since we pin by digest)
+  - DL3015: Avoid `--no-install-recommends`
+  - DL3020: Use COPY instead of ADD
+  - DL3025: Use arguments in CMD/ENTRYPOINT
+
+**Configuration (`.hadolint.yaml`):**
+```yaml
+ignored:
+  - DL3006  # We pin by digest, tag is for readability only
+
+override:
+  error:
+    - DL3001  # Pin apt versions
+    - DL3002  # Last USER should not be root
+    - DL3015  # Avoid --no-install-recommends
+    - DL3020  # Use COPY instead of ADD
+    - DL3025  # Use arguments
+
+trustedRegistries:
+  - ghcr.io
+  - docker.io
+```
+
+#### Trivy (Security + Misconfiguration Scanning)
+
+- **What:** Comprehensive security scanner with IaC misconfiguration detection
+- **Install:** `brew install trivy`
+- **Usage:**
+  - `trivy config Dockerfile` — Dockerfile misconfigurations
+  - `trivy config compose.yaml` — Compose file misconfigurations
+  - `trivy image <image>` — Vulnerability scanning
+
+#### Built-in Compose Validation
+
+Docker Compose has built-in syntax validation:
+
+```bash
+docker compose config --quiet  # Validate compose file syntax
+```
+
+### Pre-commit Hooks
+
+Pre-commit hooks enforce linting before commits:
+
+```yaml
+# .pre-commit-config.yaml (Docker section)
+repos:
+  - repo: https://github.com/hadolint/hadolint
+    rev: v2.12.0
+    hooks:
+      - id: hadolint
+        args: ['--config', '.hadolint.yaml']
+
+  - repo: local
+    hooks:
+      - id: compose-validate
+        name: Validate Docker Compose
+        entry: bash -c 'docker compose config --quiet'
+        language: system
+        files: ^compose.*\.ya?ml$
+```
+
 ### CI Integration (Future)
 
 The following will be added in subsequent PRs:
@@ -132,6 +206,8 @@ The following will be added in subsequent PRs:
 3. **SBOM generation:** Syft or Trivy for SBOMs (docker.md:17)
 4. **Digest pinning CI:** Automated verification that images are pinned
 5. **Compose validation:** `docker compose config --quiet` in CI (docker-compose.md:25)
+6. **Hadolint in CI:** GitHub Action `hadolint/hadolint-action@v3.1.0`
+7. **Trivy config scan:** `trivy config Dockerfile compose.yaml`
 
 ## Consequences
 
