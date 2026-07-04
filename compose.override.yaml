@@ -1,0 +1,20 @@
+# compose.override.yaml - Development overrides
+# Reference: docs/specs/delivery/docker-compose.md
+# Auto-loaded by `docker compose` for local development
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      # Mount source code for hot-reload during development
+      - ./main.py:/app/main.py:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=DEBUG
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M

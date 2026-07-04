@@ -1,0 +1,43 @@
+# Version control
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+compose*.yaml
+.dockerignore
+
+# Documentation
+docs/
+*.md
+
+# Tests and verification
+tests/
+verify/
+
+# CI/CD
+.github/
+
+# Python artifacts
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv/
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Agent workspace
+workspace/
